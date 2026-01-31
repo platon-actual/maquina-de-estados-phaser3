@@ -1,7 +1,9 @@
 /**
- * Crear objetos para que el robot los RECOJA
+ * Crear objetos para que el robot interactue
  */
 
+
+// Al ser una máquina de estados finita, los estados son prediseñados:
 export const ESTADO_BUSCA = 1;
 export const ESTADO_NUEVA_BUSQUEDA = 2;
 export const ESTADO_IR_A_BATERIA = 3;

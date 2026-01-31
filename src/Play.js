@@ -1,8 +1,7 @@
-//import crearBateriaYObjetos from './cosasForRobots';
+
 import Robot from './Robot';
-import { Objeto, Bateria } from './cosasForRobots';
-import { ESTADO_BUSCA, ESTADO_NUEVA_BUSQUEDA, ESTADO_IR_A_BATERIA, ESTADO_FIN } from './cosasForRobots'
-//import Robot from './Robot';
+import { Objeto, Bateria } from './Objetos';
+import { ESTADO_BUSCA, ESTADO_NUEVA_BUSQUEDA, ESTADO_IR_A_BATERIA, ESTADO_FIN } from './Objetos'
 
 import Phaser from 'phaser';
 
@@ -11,52 +10,46 @@ export class Play extends Phaser.Scene
     constructor() {
         super({ key: 'Play' });
         
+        // arreglos para instancias de objetos, e instancias para robot y batería.
         this.objetos = [];
         this.indice_objetos = -1;
         this.bateria = null;
         this.robot = null;
         this.MAX_OBJETOS = 10;
-        // this.MAX_OBJETOS = 2;
+
+        // para calcular las distancias a los objetos
+        this.distancia_x = null;
+        this.distancia_y = null;
     }
     
     create() {
-        console.log("Hola mundo");
         this.width = this.sys.game.config.width;
         this.height = this.sys.game.config.height;
         this.center_width = this.width/2;
         this.center_height = this.height/2;
         
-        //this.cameras.main.setBackgroundColor(0x87ceeb);
-        this.cameras.main.setBackgroundColor(0x333322);
+        this.cameras.main.setBackgroundColor(0x222222);
         
+        // se agregan los cafeses, y las comidas, para alimentar al robot
         for ( let cont = 0; cont < this.MAX_OBJETOS; cont ++ ) {
             let randomX = Phaser.Math.Between( 50, 640 );
             let randomY = Phaser.Math.Between( 50, 430 );
             
             let nuevoObjeto = new Objeto(this, randomX, randomY);
-            console.log("objeto creado --");
             this.objetos.push( nuevoObjeto );
-            //this.add ( this.objetos[cont] );
         }
         
         this.indice_objetos = 0;
         
         this.bateria = new Bateria(this, 64, 64);
         
-        
-        
-        console.log("creando robot...");
-        this.robot = new Robot(this,  -64 /*this.center_width*/, this.center_height, 'card-1');
-        console.log("[INTERGALACTIC PLANETARY]");
-        
-        console.log("Estado actual: " + this.robot.estado_actual);
+        this.robot = new Robot(this,  -64, this.center_height);
         
         this.tweens.add({
             targets: this.bateria,
             scale: { from : 4, to: 2 },
             duration: 1300, // / this.scale,
             onComplete: () => {
-                //this.destroy();
                 this.robot.init();
                 this.robot.estado_actual = ESTADO_NUEVA_BUSQUEDA;
             },
@@ -65,12 +58,10 @@ export class Play extends Phaser.Scene
     }
     
     actualizar_estado() {
+        // La lógica de la máquina de estados, se manejan las interacciones
+        //con los objetos y la gestión de energía.
         switch (this.robot.estado_actual) {
-            case 0:
-                //nada
-                break;
             case ESTADO_BUSCA:
-                
                 this.buscar_objeto();
                 
                 var distancia_x = Math.abs(this.robot.x - this.objetos[this.indice_objetos].x);
@@ -79,7 +70,6 @@ export class Play extends Phaser.Scene
                 if (distancia_x < 5 && distancia_y < 5){
                     this.desactiva_objeto();
                     this.robot.estado_actual = ESTADO_NUEVA_BUSQUEDA;
-                    console.log("Estado actual: " + this.robot.estado_actual);
                 }
                 
                 if (this.robot.energia < 300) {
@@ -98,13 +88,11 @@ export class Play extends Phaser.Scene
                 if (distancia_x < 5 && distancia_y < 5){
                     this.recargar_energia();
                     this.robot.estado_actual = ESTADO_NUEVA_BUSQUEDA;
-                    console.log("Estado actual: " + this.robot.estado_actual);
                 }
                 
-                if (this.robot.energia == 0) {
+                if (this.robot.energia == 0)
                     this.robot.estado_actual = ESTADO_FIN;
-                    console.log("Estado actual: " + this.robot.estado_actual);
-                }
+
                 break;
             case ESTADO_FIN:
                 this.finalizar();
@@ -114,28 +102,26 @@ export class Play extends Phaser.Scene
     
     buscar_objeto() {
         const velocidad = 3;
-        if (this.objetos[this.indice_objetos].x < this.robot.x ) this.robot.x -= velocidad;
-        if (this.objetos[this.indice_objetos].x > this.robot.x ) this.robot.x += velocidad;
-        if (this.objetos[this.indice_objetos].y < this.robot.y ) this.robot.y -= velocidad;
-        if (this.objetos[this.indice_objetos].y > this.robot.y ) this.robot.y += velocidad;
+        if (this.objetos[this.indice_objetos].x < this.robot.x )
+            this.robot.x -= velocidad;
+        if (this.objetos[this.indice_objetos].x > this.robot.x )
+            this.robot.x += velocidad;
+        if (this.objetos[this.indice_objetos].y < this.robot.y )
+            this.robot.y -= velocidad;
+        if (this.objetos[this.indice_objetos].y > this.robot.y )
+            this.robot.y += velocidad;
         
         // cada unidad de movimiento gasta energía:
         this.robot.energia --;
     }
     desactiva_objeto() {
-        console.log ("entra en función: desactiva_objeto()" );
         if ( this.objetos[this.indice_objetos].esta_activo == true ) {
             this.objetos[this.indice_objetos].esta_activo = false;
             this.objetos[this.indice_objetos].visible = false;
-            console.log("objeto : " + this.indice_objetos + " DESACTIVADO");
-            if (this.robot.energia < 333) {
-                this.robot.estado_actual = ESTADO_IR_A_BATERIA;
-                console.log("Estado actual: " + this.robot.estado_actual);
-            }
         }
     }
     nueva_busqueda() {
-        console.log ("entra en función: nueva_busqueda()" );
+        // Se fija en cuales objetos están activos y cambia el estado a "buscar"
         this.indice_objetos = -1;
         let activos = 0;
         for ( let cont = 0; cont < this.MAX_OBJETOS; cont ++ ) {
@@ -144,11 +130,10 @@ export class Play extends Phaser.Scene
                 this.indice_objetos = cont;
                 console.log("Indice objeto actual: " + this.indice_objetos);
                 this.robot.estado_actual = ESTADO_BUSCA;
-            } /*else {
-                if ( cont == )
-            }*/
+            }
         }
         
+        // si no hay más objetos activos, finaliza el algoritmo:
         if (activos > 0 ) { /* nada */ }
         else { this.robot.estado_actual = ESTADO_FIN; }
         
@@ -160,7 +145,7 @@ export class Play extends Phaser.Scene
         if (this.bateria.x > this.robot.x ) this.robot.x += velocidad;
         if (this.bateria.y < this.robot.y ) this.robot.y -= velocidad;
         if (this.bateria.y > this.robot.y ) this.robot.y += velocidad;
-        // cada píxel de movimiento gasta energía:
+        // cada movimiento gasta energía:
         this.robot.energia --;
     }
     recargar_energia() {
@@ -177,14 +162,8 @@ export class Play extends Phaser.Scene
                 targets: this.robot,
                 scale: { from : 2, to: 4 },
                 duration: 1300,
-//                 onComplete: () => {
-//                     this.robot.estado_actual = 0;
-//                     
-//                 },
             });
         }
-        /*no hace nada, solo muestra una animación y un texto.*/
-        
     }
     
     updateText() {

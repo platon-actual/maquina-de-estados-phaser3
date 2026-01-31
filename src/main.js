@@ -10,10 +10,10 @@ const config = {
     parent: 'container',
     physics: {
         default: "arcade",
-        arcade: {
-            gravity: { y: 350 },
-            //debug: true,
-        },
+        // arcade: {
+        //     gravity: { y: 350 },
+        //     //debug: true,
+        // },
     },
     //backgroundColor: '#192a56',
     backgroundColor: '#000000',

@@ -1,6 +1,9 @@
-//Robot.js
+/*
+ * El objeto del robot.
+*/
+
 import Phaser from 'phaser';
-import { ESTADO_BUSCA, ESTADO_NUEVA_BUSQUEDA, ESTADO_IR_A_BATERIA, ESTADO_FIN } from './cosasForRobots'
+import { ESTADO_BUSCA, ESTADO_NUEVA_BUSQUEDA, ESTADO_IR_A_BATERIA, ESTADO_FIN } from './Objetos'
 
 export default class Robot extends Phaser.GameObjects.Image {
     constructor (scene, x, y) {
@@ -11,10 +14,7 @@ export default class Robot extends Phaser.GameObjects.Image {
         this.setScale(2);
         scene.add.existing (this);
         
-        //this.init();
-        
         this.energia = 800;
-        // this.energia_text = new Phaser.GameObjects.Text(scene, x, y, this.energia, {fontSize: 15, color: '#cc4422'}); 
         this.energia_text = this.scene.add.text(this.x - 24, this.y - 32, this.energia, {fontSize: 20, color: '#cc4422'});
         
     }
