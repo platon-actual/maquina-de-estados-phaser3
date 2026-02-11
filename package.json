@@ -1,6 +1,6 @@
 {
-  "name": "card-memory",
-  "version": "0.0.0",
+  "name": "logica-difusa",
+  "version": "0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",

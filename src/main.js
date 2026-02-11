@@ -1,9 +1,11 @@
 import { Preloader } from './Preloader';
-import { Play } from './Play';
+import { Menu } from './Menu';
+import { MaqDeEstados } from './MaqDeEstados';
+import { MaquinaDifusa } from './MaquinaDifusa';
 import Phaser from 'phaser';
 
 const config = {
-    title: 'Máquina de Estados (?)',
+    title: 'Máquina de Estados, Máquina Difusa',
     type: Phaser.AUTO,
     width: 720,
     height: 480,
@@ -25,7 +27,9 @@ const config = {
     
     scene: [
         Preloader,
-        Play
+        Menu,
+        MaqDeEstados,
+        MaquinaDifusa
     ]
 };
 

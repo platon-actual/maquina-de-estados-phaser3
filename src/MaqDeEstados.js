@@ -1,14 +1,16 @@
 
+import { FuncionBool } from './FuncionesMembresia';
+
 import Robot from './Robot';
 import { Objeto, Bateria } from './Objetos';
 import { ESTADO_BUSCA, ESTADO_NUEVA_BUSQUEDA, ESTADO_IR_A_BATERIA, ESTADO_FIN } from './Objetos'
 
 import Phaser from 'phaser';
 
-export class Play extends Phaser.Scene
+export class MaqDeEstados extends Phaser.Scene
 {
     constructor() {
-        super({ key: 'Play' });
+        super({ key: 'MaqDeEstados' });
         
         // arreglos para instancias de objetos, e instancias para robot y batería.
         this.objetos = [];
@@ -24,6 +26,23 @@ export class Play extends Phaser.Scene
     }
     
     create() {
+        var descripcion_text = [
+            "Este es un ejemplo, de una",
+            "máquina con estados finitos.",
+            "El robot, junta objetos,",
+            "y para eso tiene estados.",
+            "Los estados son:",
+            "ESTADO_BUSCA, ESTADO_NUEVA_BUSQUEDA,",
+            "ESTADO_IR_A_BATERIA, ESTADO_FIN",
+            "Un ejemplo de esta técnica, son,",
+            "las aspiradoras robot redondas.",
+            " ",
+            "Si usa un navegador, presione F12",
+            "para ver la consola y los valores."
+        ];
+        this.descripcion = this.add.text( 370, 100, descripcion_text, {fontSize: 16, fill: '#FFFFFF'} );
+
+
         this.width = this.sys.game.config.width;
         this.height = this.sys.game.config.height;
         this.center_width = this.width/2;
@@ -71,14 +90,17 @@ export class Play extends Phaser.Scene
                 if (distancia_x < 5 && distancia_y < 5){
                     this.desactiva_objeto();
                     this.robot.estado_actual = ESTADO_NUEVA_BUSQUEDA;
+                    console.log(" robot.estado_actual = ESTADO_NUEVA_BUSQUEDA");
                 }
                 
                 if (this.robot.energia < 200 && this.bateria.energia > 0 ) {
                     this.robot.estado_actual = ESTADO_IR_A_BATERIA;
+                    console.log(" robot.estado_actual = ESTADO_IR_A_BATERIA");
                 }
 
                 if (this.robot.energia <= 0) {
                     this.robot.estado_actual = ESTADO_FIN;
+                    console.log(" robot.estado_actual = ESTADO_FIN");
                 }
                 break;
             case ESTADO_NUEVA_BUSQUEDA:
@@ -135,6 +157,8 @@ export class Play extends Phaser.Scene
                 this.indice_objetos = cont;
                 console.log("Indice objeto actual: " + this.indice_objetos);
                 this.robot.estado_actual = ESTADO_BUSCA;
+                console.log(" robot.estado_actual = ESTADO_BUSCA");
+
             }
         }
         
@@ -168,7 +192,7 @@ export class Play extends Phaser.Scene
                 scale: { from : 2, to: 4 },
                 duration: 1300,
                 onComplete: () => {
-                    var btn_reiniciar = this.add.text( 100, 100, "REINICIAR", {fill: '#FFFFFF'});
+                    var btn_reiniciar = this.add.text( 100, 100, "REINICIAR", {fontSize: 24, fill: '#FFFFFF'});
                     btn_reiniciar.setInteractive();
                     //btn_reiniciar.addEventListener("mousedown", (e) => { reload(); });
                     btn_reiniciar.on("pointerdown", ()=>{ window.location.reload(); });

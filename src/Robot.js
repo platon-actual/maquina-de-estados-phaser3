@@ -14,7 +14,7 @@ export default class Robot extends Phaser.GameObjects.Image {
         this.setScale(2);
         scene.add.existing (this);
         
-        this.energia = 800;
+        this.energia = 600;
         this.energia_text = this.scene.add.text(this.x - 24, this.y - 32, this.energia, {fontSize: 20, color: '#cc4422'});
         
     }
